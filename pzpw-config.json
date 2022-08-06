@@ -1,0 +1,24 @@
+{
+    "mods": {
+        "test": {
+            "name": "test",
+            "description": "My new mod description.",
+            "poster": "poster.png",
+            "icon": "icon.png"
+        }
+    },
+    "workshop": {
+        "id": -1,
+        "title": "test",
+        "author": "test",
+        "visibility": "public",
+        "mods": [
+            "test"
+        ],
+        "tags": [
+            "Build 41"
+        ]
+    },
+    "typings": {},
+    "cachedir": ""
+}
