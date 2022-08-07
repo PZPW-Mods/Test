@@ -53,19 +53,15 @@
                 }
             },
             "required": [
-                "id",
                 "title",
                 "visibility",
+                "tags",
                 "mods"
             ]
         },
         "typings": {
             "description": "Typing to includes.",
             "type": "object"
-        },
-        "cachedir": {
-            "description": "The location of the game cache, default to your user Zomboid/ directory.",
-            "type": "string"
         }
     },
     "$defs": {
@@ -97,13 +93,19 @@
                             "type": "string"
                         }
                     ]
+                },
+                "pack": {
+                    "description": "",
+                    "type": "string"
+                },
+                "tiledef": {
+                    "description": "",
+                    "type": "string"
                 }
             },
             "required": [
                 "name",
-                "description",
-                "poster",
-                "icon"
+                "description"
             ]
         }
     },

@@ -18,8 +18,8 @@ onFillWorldObjectContextMenu.addListener((playerNum: number, context: ISContextM
 
     if (player.getVehicle()) return
 
-    context.addDebugOption("Do test action", player, doTestAction, player.getSquare())
-    context.addDebugOption("Send ping to server", player, doSendPing)
+    context.addOptionOnTop("Do test action", player, doTestAction, player.getSquare())
+    context.addOptionOnTop("Send ping to server", player, doSendPing)
 })
 
 function doEquipHammer(player: IsoPlayer, hammer: HandWeapon) {

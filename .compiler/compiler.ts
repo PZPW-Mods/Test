@@ -2,6 +2,7 @@
  *  Rewrite of the original compiler.
  */
 
+import { existsSync } from "fs";
 import { copyFile, cp, appendFile, rm, mkdir, readFile, writeFile, readdir, stat } from "fs/promises";
 import { dirname, join, resolve } from "path";
 import { green, magenta, red, yellow } from 'colors';
@@ -14,10 +15,12 @@ type CompileType = "distribution" | "development" | "declaration" | "workshop";
 interface ModConfig {
     id: string
     name: string
-    version: string
     description: string
-    poster: string
-    icon: string
+    poster?: string
+    icon?: string
+    require?: string | string[]
+    pack?: string
+    tiledef?: string
     [key: string]: any
 }
 
@@ -26,15 +29,15 @@ interface WorkshopConfig {
     title: string
     mods: string[]
     visibility: Visibility
-    tags: string[]
+    author?: string | string[]
+    tags?: string[]
     [key: string]: any
 }
 
 interface RootConfig {
     mods: { [id: string]: ModConfig },
     workshop: WorkshopConfig,
-    typings: { [key: string]: string },
-    cachedir: string
+    typings: { [key: string]: string }
 }
 
 class Compiler {
@@ -44,6 +47,7 @@ class Compiler {
     private args: string[];
     private startTime: number;
     private copyright: string = "";
+    private cachedir: string = "";
     private pzpwConfig: RootConfig;
     readonly compileType: CompileType;
 
@@ -52,8 +56,18 @@ class Compiler {
         this.startTime = new Date().getTime();
         this.compileType = this.args[0] as CompileType;
         this.pzpwConfig = require("../pzpw-config.json");
-        if (!this.pzpwConfig.cachedir || this.pzpwConfig.cachedir == "") this.pzpwConfig.cachedir = join(require('os').homedir(), "Zomboid");
-        this.readHeaderFooter().then(() => this.compile());
+        this.getCachedir().then(() => {
+            this.readHeaderFooter().then(() => this.compile());
+        });
+    }
+
+    private async getCachedir() {
+        if (existsSync("./.cachedir")) {
+            this.cachedir = await readFile("./.cachedir", { encoding: "utf-8" });
+        }
+        if (!this.cachedir || this.cachedir == "") {
+            this.cachedir = join(require('os').homedir(), "Zomboid");
+        }
     }
 
     public static print(text: string) {
@@ -196,10 +210,21 @@ class Compiler {
         let content = "";
         
         Object.keys(this.pzpwConfig.mods[modId]).forEach((key: string) => {
-            if (this.pzpwConfig.mods[modId][key] != null && this.pzpwConfig.mods[modId][key] != "") {
-                content += `${key}=${this.pzpwConfig.mods[modId][key]}\r\n`;
+            if (this.pzpwConfig.mods[modId][key] != null) {
+                
+                const obj = this.pzpwConfig.mods[modId][key];
+                let value;
+                if (Array.isArray(obj)) {
+                    if (obj.length > 0) value = obj.join(";");
+                }
+                else value = obj;
+
+                if (value) content += `${key}=${value}\r\n`;
             }
         });
+
+        if (!this.pzpwConfig.mods[modId].icon) content += `icon=icon.png\r\n`;
+        if (!this.pzpwConfig.mods[modId].poster) content += `poster=poster.png\r\n`;
 
         try { await writeFile(`./dist/${modId}/mod.info`, content); } catch(error) {
             Compiler.error(error);
@@ -210,10 +235,18 @@ class Compiler {
         let content = "version=1\r\n";
         
         Object.keys(this.pzpwConfig.workshop).forEach((key: string) => {
-            if (this.pzpwConfig.workshop[key] != null && this.pzpwConfig.workshop[key] != "") {
-                if (key == "id" && this.pzpwConfig.workshop[key] == -1 ) return;
-                if (key == "mods") return; // ignore the mods array
-                content += `${key}=${this.pzpwConfig.workshop[key]}\r\n`;
+            if (this.pzpwConfig.workshop[key] != null) {
+                if (key === "id" && this.pzpwConfig.workshop[key] == -1 ) return;
+                if (key === "mods") return; // ignore the mods array
+
+                let obj = this.pzpwConfig.workshop[key];
+                let value;
+                if (Array.isArray(obj)) {
+                    if (obj.length > 0) value = obj.join(";");
+                }
+                else value = obj;
+
+                if (value) content += `${key}=${value}\r\n`;
             }
         });
 
@@ -310,8 +343,8 @@ class Compiler {
         for (let i = 0; i < modIds.length; i++) {
             const modId = modIds[i];
 
-            console.log(`Copying distribution mod into cachedir ${this.pzpwConfig.cachedir}/mods/`);
-            await cp(`./dist/${modId}`, join(this.pzpwConfig.cachedir, "mods", modId), { recursive: true, force: true });
+            console.log(`Copying distribution mod into cachedir ${this.cachedir}/mods/`);
+            await cp(`./dist/${modId}`, join(this.cachedir, "mods", modId), { recursive: true, force: true });
         }
         
         await this.postCompile();
@@ -380,8 +413,8 @@ class Compiler {
             await cp(`${distModDirectory}`, `${workshopModDirectory}`, { recursive: true });
         }
 
-        console.log(`Copying workshop mod into cachedir ${this.pzpwConfig.cachedir}/worshop/`);
-        await cp(`./workshop`, join(this.pzpwConfig.cachedir, "workshop", this.pzpwConfig.workshop.title), { recursive: true, force: true });
+        console.log(`Copying workshop mod into cachedir ${this.cachedir}/worshop/`);
+        await cp(`./workshop`, join(this.cachedir, "workshop", this.pzpwConfig.workshop.title), { recursive: true, force: true });
     }
 
     private readonly REIMPORT_TEMPLATE = `-- PIPEWRENCH --
