@@ -5,13 +5,13 @@ onClientCommand.addListener((module, command, player, args) => {
 
     if (isClient()) return; // dont execute on clients
 
-    if (module != "TestMod") return
+    if (module != "TestModBasic") return
 
     if (command == "ping") {
         print("Server received command ping!")
 
-        if (isServer()) sendServerCommand(player, "TestMod", "pong", args) // send normally if server
-        else triggerEvent("OnServerCommand", "TestMod", "pong", args) // send hack for single-player
+        if (isServer()) sendServerCommand(player, "TestModBasic", "pong", args) // send normally if server
+        else triggerEvent("OnServerCommand", "TestModBasic", "pong", args) // send hack for single-player
     }
 
 })

@@ -3,7 +3,7 @@ import { onServerCommand } from "PipeWrench-Events"
 
 onServerCommand.addListener((module, command, args) => {
 
-    if (module != "TestMod") return
+    if (module != "TestModBasic") return
 
     if (command == "pong") {
         getPlayer().Say("Received command pong!")
