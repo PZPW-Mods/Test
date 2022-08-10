@@ -1,4 +1,4 @@
-import { IsoPlayer, isServer, KahluaTable, sendClientCommand, sendServerCommand, triggerEvent } from "PipeWrench"
+import { isClient, IsoPlayer, isServer, KahluaTable, sendClientCommand, sendServerCommand, triggerEvent } from "PipeWrench"
 import { onClientCommand, onServerCommand } from "PipeWrench-Events"
 
 type ClientCommand = (player: IsoPlayer, ...args: any[]) => void
@@ -28,7 +28,7 @@ export class Server {
 
     /** @noSelf */
     static SendTo(targetPlayer: IsoPlayer, command: string, args: KahluaTable) {
-        if (!isServer()) {
+        if (!isClient() && !isServer()) {
             triggerEvent("OnServerCommand", CommandModule, command, args)
         }
         else {
@@ -38,7 +38,7 @@ export class Server {
 
     /** @noSelf */
     static SendAll(command: string, args: KahluaTable) {
-        if (!isServer()) {
+        if (!isClient() && !isServer()) {
             triggerEvent("OnServerCommand", CommandModule, command, args)
         }
         else {
