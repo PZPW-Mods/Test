@@ -13,9 +13,9 @@
     "target":"ESNext",
     "typeRoots": [
       "./.typings",
-      "node_modules/ISUI", 
-      "node_modules/Zomboid", 
-      "node_modules/ZomboidEvents", 
+      "node_modules/PipeWrench", 
+      "node_modules/PipeWrench-Utils", 
+      "node_modules/PipeWrench-Events", 
       "node_modules/@types", 
       "lua-types/5.1"
     ],
