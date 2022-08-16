@@ -1,5 +1,8 @@
-# PZPW Template
-Main template used by PZPW when setting up a new project.
+# PZPW Test Mod
+
+[![Build](https://github.com/PZPW-Mods/Test/actions/workflows/Build.yml/badge.svg)](https://github.com/PZPW-Mods/Test/actions/workflows/Build.yml)
+
+Mod for testing PipeWrench features.
 
 <br>
 
