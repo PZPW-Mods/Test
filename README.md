@@ -2,7 +2,7 @@
 
 [![Build](https://github.com/PZPW-Mods/Test/actions/workflows/Build.yml/badge.svg)](https://github.com/PZPW-Mods/Test/actions/workflows/Build.yml)
 
-Mod for testing PipeWrench features.
+Test mod, timed action, context menu, client/server commands, hooks, etc
 
 <br>
 
